@@ -1,3 +1,5 @@
+delete from mart.f_customer_retention
+    where period_id = (select dc.week_of_year from mart.d_calendar as dc where dc.date_actual = '{{ds}}');
 insert into mart.f_customer_retention (
     period_name,
     period_id,
@@ -20,7 +22,7 @@ select
 	sum(payment_amount) as amt
 from staging.user_order_log uol
 left join mart.d_calendar as dc on uol.date_time::Date = dc.date_actual
-where uol.date_time::Date = '{{ds}}'
+where uol.date_time::Date between date_trunc('week', '{{ds}}') and '{{ds}}'
 group by 1,2,3,4
 )
 select
